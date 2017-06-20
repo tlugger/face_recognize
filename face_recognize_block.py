@@ -5,6 +5,8 @@ from nio.signal.base import Signal
 import face_recognition
 import cv2
 import pyrealsense as pyrs
+import pickle
+import rethinkdb as r
 
 class Face_Recognize(Block):
 
@@ -18,16 +20,19 @@ class Face_Recognize(Block):
         face_encodings = []
         face_names = []
 
+        self.ref_names = []
+        self.ref_encodings = []
 
     def start(self):
         pyrs.start()
         self.dev = pyrs.Device()
 
-        obama_image = face_recognition.load_image_file("obama.jpg")
-        self.obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
+        conn = r.connect("localhost", 28015).repl()
+        faces = r.db('employees').table('faces').run(conn)
 
-        tyler_image = face_recognition.load_image_file("tyler.jpg")
-        self.tyler_face_encoding = face_recognition.face_encodings(tyler_image)[0]
+        for face in faces:
+            self.ref_names.append(face['name'])
+            self.ref_encodings.append(pickle.loads(face['encoding']))
 
     def stop(self):
         self.dev.stop()
@@ -35,10 +40,13 @@ class Face_Recognize(Block):
     def process_signals(self, signals):
 
         for signal in signals:
-            self.dev.wait_for_frames()
+
+            try:
+                self.dev.wait_for_frames()
+            except AttributeError:
+                break
+
             c = self.dev.color
-            c = cv2.cvtColor(c, cv2.COLOR_RGB2BGR)
-            # Grab a single frame of video
 
             frame = c
 
@@ -54,18 +62,15 @@ class Face_Recognize(Block):
                 face_names = []
                 for face_encoding in face_encodings:
                     # See if the face is a match for the known face(s)
-                    match = face_recognition.compare_faces([self.obama_face_encoding, self.tyler_face_encoding], face_encoding)
+                    match = face_recognition.compare_faces(self.ref_encodings, face_encoding)
                     name = "Stranger!!!"
 
-                    if match[0]:
-                        name = "Barack"
-                    elif match[1]:
-                        name = "Tyler"
+                    for i in range(len(match)):
+                        if match[i]:
+                            name = self.ref_names[i]
 
-                    print(name)
+                    signal = Signal({
+                        "found": name
+                    })
 
-                    face_names.append(name)
-
-            self.process_this_frame = not self.process_this_frame
-
-        self.notify_signals(signals)
+                    self.notify_signals([signal])
