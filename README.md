@@ -46,11 +46,11 @@ Dependencies
 - cv2
 - pyrealsense
 - pickle
-- rethinkdb
 
 Input
 -------
-Any signal to trigger the block to run
+A signal through "Unknown" to begin collecting frames from the camera and search for faces
+A signal through "Known" to add known face encodings and names to compare unknown faces against
 
 Output
 -------
