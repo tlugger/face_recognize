@@ -4,7 +4,6 @@ from nio.signal.base import Signal
 
 import face_recognition
 import pickle
-#import rethinkdb as r
 
 class GetEncodingFromFile(Block):
 

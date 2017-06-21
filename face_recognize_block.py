@@ -1,4 +1,5 @@
 from nio.block.base import Block
+from nio.block.terminals import input
 from nio.properties import VersionProperty
 from nio.signal.base import Signal
 
@@ -8,6 +9,8 @@ import pyrealsense as pyrs
 import pickle
 import rethinkdb as r
 
+@input('known')
+@input('unknown')
 class FaceRecognize(Block):
 
     version = VersionProperty('2.0.0')
