@@ -2,7 +2,6 @@ from nio.block.base import Block
 from nio.block.terminals import input
 from nio.properties import VersionProperty
 from nio.signal.base import Signal
-from collections import defaultdict
 
 import face_recognition
 import cv2
