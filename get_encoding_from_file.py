@@ -6,7 +6,7 @@ import face_recognition
 import pickle
 #import rethinkdb as r
 
-class Add_Face(Block):
+class GetEncodingFromFile(Block):
 
     image_path = StringProperty(title='Image Path', default='')
     uid = StringProperty(title='User ID', defult='')
