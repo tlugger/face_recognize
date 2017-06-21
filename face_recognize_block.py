@@ -8,7 +8,6 @@ import face_recognition
 import cv2
 import pyrealsense as pyrs
 import pickle
-import rethinkdb as r
 
 @input('known')
 @input('unknown')
