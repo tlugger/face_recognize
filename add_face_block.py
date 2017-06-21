@@ -4,7 +4,7 @@ from nio.signal.base import Signal
 
 import face_recognition
 import pickle
-import rethinkdb as r
+#import rethinkdb as r
 
 class Add_Face(Block):
 
@@ -15,13 +15,8 @@ class Add_Face(Block):
 
     def __init__(self):
         super().__init__()
-        self.conn = []
-
-    def start(self):
-        self.conn = r.connect("localhost", 28015).repl()
 
     def save_encoding(self, file_path, save_name, user_id):
-        entry = "Database addition failed!"
         image = face_recognition.load_image_file(file_path)
         face_encoding = face_recognition.face_encodings(image)[0]
 
@@ -33,7 +28,6 @@ class Add_Face(Block):
             'encoding': serialized_encoding
         }
 
-        r.db('employees').table('faces').insert(entry).run(self.conn)
         return entry
 
     def process_signals(self, signals):
