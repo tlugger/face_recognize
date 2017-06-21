@@ -2,9 +2,9 @@
 
 Blocks for working with facial recognition
 
-Add Face
+Get Encoding From File
 ========
-Find a face encoding from an image file, save the encoding, name, and id of the face to a rethink db
+Find a face encoding from an image file, send encoding and other data as signal
 
 Properties
 --------------
@@ -16,7 +16,6 @@ Dependencies
 ----------------
 - face_recognition
 - pickle
-- rethinkdb
 
 Input
 -------
@@ -24,7 +23,7 @@ Any signal to trigger the block to run
 
 Output
 -------
-A signal containing the entry that was added to the rethink database
+A signal containing the facial encoding, user id, and name
 
 sample signal: 
 
