@@ -1,0 +1,5 @@
+rethinkdb
+pickle
+opencv-python
+pyrealsense
+face_recognition
