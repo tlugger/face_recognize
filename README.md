@@ -43,7 +43,7 @@ Grab a frame from an intel realsense camera, find a face encoding within the fra
 Dependencies
 ----------------
 - face_recognition
-- cv2
+- opencv-python
 - pyrealsense
 - pickle
 
