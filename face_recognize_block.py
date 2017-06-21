@@ -63,7 +63,7 @@ class Face_Recognize(Block):
                 for face_encoding in face_encodings:
                     # See if the face is a match for the known face(s)
                     match = face_recognition.compare_faces(self.ref_encodings, face_encoding)
-                    name = "Stranger!!!"
+                    name = "Unknown"
 
                     for i in range(len(match)):
                         if match[i]:
