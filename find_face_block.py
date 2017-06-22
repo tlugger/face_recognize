@@ -31,7 +31,7 @@ class FindFace(Block):
 
         for signal in signals:
             if input_id == 'face':
-                self.ref_names.append(signal.name)
+                self.ref_names = [signal.name]
                 self.ref_encodings = [pickle.loads(signal.encoding)]
 
             if input_id == 'find':
