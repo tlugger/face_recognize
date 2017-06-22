@@ -1,6 +1,6 @@
 from nio.block.base import Block
 from nio.block.terminals import input
-from nio.properties import VersionProperty
+from nio.properties import VersionProperty, BoolProperty
 from nio.signal.base import Signal
 
 import face_recognition
@@ -13,6 +13,7 @@ import pickle
 class FindFace(Block):
 
     version = VersionProperty('2.0.0')
+    location = BoolProperty(title='Output Face Location?', default=False)
 
     def __init__(self):
         super().__init__()
@@ -55,17 +56,24 @@ class FindFace(Block):
                 face_locations = face_recognition.face_locations(small_frame)
                 face_encodings = face_recognition.face_encodings(small_frame, face_locations)
 
-                for face_encoding in face_encodings:
+                #for face_encoding in face_encodings:
+                for e in range(len(face_encodings)):
                     # See if the face is a match for the known face(s)
-                    match = face_recognition.compare_faces(self.ref_encodings, face_encoding)
+                    match = face_recognition.compare_faces(self.ref_encodings, face_encodings[e])
                     name = "Unknown"
 
                     for i in range(len(match)):
                         if match[i]:
                             name = self.ref_names[i]
 
-                    signal = Signal({
-                        "found": name
-                    })
+                    if self.location():
+                        signal = Signal({
+                            "found": name,
+                            "location": face_locations[e]
+                        })
+                    else:
+                        signal = Signal({
+                            "found": name
+                        })
 
                     self.notify_signals([signal])
