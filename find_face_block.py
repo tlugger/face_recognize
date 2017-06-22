@@ -34,8 +34,10 @@ class FindFace(Block):
                 self.ref_names = []
                 self.ref_encodings = []
                 for face in signal.faces:
-                    self.ref_names.append(face['name'])
-                    self.ref_encodings.append(pickle.loads(face['encoding']))
+                    name = face['name']
+                    for encoding in face['encoding']:
+                        self.ref_names.append(name)
+                        self.ref_encodings.append(pickle.loads(encoding))
 
             if input_id == 'unknown':
                 try:
