@@ -8,8 +8,8 @@ import cv2
 import pyrealsense as pyrs
 import pickle
 
-@input('face')
-@input('find')
+@input('known')
+@input('unknown')
 class FindFace(Block):
 
     version = VersionProperty('2.0.0')
@@ -30,11 +30,14 @@ class FindFace(Block):
     def process_signals(self, signals, input_id):
 
         for signal in signals:
-            if input_id == 'face':
-                self.ref_names = [signal.name]
-                self.ref_encodings = [pickle.loads(signal.encoding)]
+            if input_id == 'known':
+                self.ref_names = []
+                self.ref_encodings = []
+                for face in signal.faces:
+                    self.ref_names.append(face['name'])
+                    self.ref_encodings.append(pickle.loads(face['encoding']))
 
-            if input_id == 'find':
+            if input_id == 'unknown':
                 try:
                     self.dev.wait_for_frames()
                 except AttributeError:
@@ -53,10 +56,14 @@ class FindFace(Block):
                 for face_encoding in face_encodings:
                     # See if the face is a match for the known face(s)
                     match = face_recognition.compare_faces(self.ref_encodings, face_encoding)
+                    name = "Unknown"
 
                     for i in range(len(match)):
                         if match[i]:
-                            signal = Signal({
-                                "found": self.ref_names[i]
-                            })
-                            self.notify_signals([signal])
+                            name = self.ref_names[i]
+
+                    signal = Signal({
+                        "found": name
+                    })
+
+                    self.notify_signals([signal])
