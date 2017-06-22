@@ -35,38 +35,9 @@ sample signal:
 }
 ```
 
-
-Face Recognize
-========
-Grab a frame from an intel realsense camera, find a face encoding within the frame, compare the encoding with known encodings from a rethinkdb, output the name of the face identified
-
-Dependencies
-----------------
-- face_recognition
-- opencv-python
-- pyrealsense
-- pickle
-
-Input
--------
-A signal through "Unknown" to begin collecting frames from the camera and search for faces
-A signal through "Known" to add known face encodings and names to compare unknown faces against
-
-Output
--------
-A signal containing the name of the face identified from the realsense camera
-
-sample signal: 
-
-```
-{
- 'face': 'Barack'
-}
-```
-
 Find Face
 ========
-Grab a frame from an intel realsense camera, find a face encoding within the frame, compare the encoding with encoding of one person from a rethinkdb, output a signal if the face was identified
+Grab a frame from an intel realsense camera, find a face encoding within the frame, compare the encoding with encoding of known faces from an input signal, output a signal containing the name of the found face.
 
 Dependencies
 ----------------
@@ -77,8 +48,8 @@ Dependencies
 
 Input
 -------
-A signal through "find" to begin collecting frames from the camera and search for a single face
-A signal through "face" to add the known face encoding and name to compare found faces against
+A signal through "unknown" to begin collecting frames from the camera and search for faces
+A signal through "known" to add the known face encodings and names to compare found faces against
 
 Output
 -------
