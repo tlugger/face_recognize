@@ -5,7 +5,6 @@ from nio.signal.base import Signal
 
 import face_recognition
 import cv2
-import pyrealsense as pyrs
 import pickle
 
 @input('known')
@@ -17,16 +16,13 @@ class FindFace(Block):
 
     def __init__(self):
         super().__init__()
-        self.dev = None
+        self.video_capture = None
         self.ref_names = []
         self.ref_encodings = []
 
     def start(self):
-        pyrs.start()
-        self.dev = pyrs.Device()
-
-    def stop(self):
-        self.dev.stop()
+        # Set up video capture using the default webcam port
+        self.video_capture = cv2.VideoCapture(0)
 
     def process_signals(self, signals, input_id):
 
@@ -41,16 +37,11 @@ class FindFace(Block):
                         self.ref_encodings.append(pickle.loads(encoding))
 
             if input_id == 'unknown':
-                try:
-                    self.dev.wait_for_frames()
-                except AttributeError:
-                    break
+                # Grab a single frome form the webacm
+                ret, frame = self.video_capture.read()
 
-                c = self.dev.color
-                frame = c
-
-                # Resize frame of video to 1/4 size for faster face recognition processing
-                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+                # Resize frame of video to 1/3ish size for faster face recognition processing
+                small_frame = cv2.resize(frame, (0, 0), fx=0.3, fy=0.3)
 
                 # Find all the faces and face encodings in the current frame of video
                 face_locations = face_recognition.face_locations(small_frame)
