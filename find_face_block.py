@@ -1,6 +1,6 @@
 from nio.block.base import Block
 from nio.block.terminals import input
-from nio.properties import VersionProperty, BoolProperty
+from nio.properties import VersionProperty, BoolProperty, IntProperty
 from nio.signal.base import Signal
 
 import face_recognition
@@ -13,6 +13,8 @@ class FindFace(Block):
 
     version = VersionProperty('2.0.0')
     location = BoolProperty(title='Output Face Location?', default=False)
+    camera = IntProperty(title='Camera Index', default=0)
+
 
     def __init__(self):
         super().__init__()
@@ -21,11 +23,7 @@ class FindFace(Block):
         self.ref_encodings = []
 
     def start(self):
-        # Set up video capture using the default webcam port
-        self.video_capture = cv2.VideoCapture(0)
-
-    def stop(self):
-        self.video_capture.release()
+        self.video_capture = cv2.VideoCapture(self.camera())
 
     def process_signals(self, signals, input_id):
 
