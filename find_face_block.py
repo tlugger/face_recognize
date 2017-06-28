@@ -39,7 +39,14 @@ class FindFace(Block):
 
             if input_id == 'unknown':
                 # Grab a single frome form the webacm
-                ret, frame = self.video_capture.read()
+                try:
+                    ret, frame = self.video_capture.read()
+                except:
+                    break
+
+                # If the camera didn't give us anything
+                if (not ret):
+                    break
 
                 # Resize frame of video to 1/3ish size for faster face recognition processing
                 small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
@@ -51,7 +58,7 @@ class FindFace(Block):
                 signal = Signal({
                     "found": "None"
                 })
-                
+
                 #for face_encoding in face_encodings:
                 for e in range(len(face_encodings)):
                     # See if the face is a match for the known face(s)
