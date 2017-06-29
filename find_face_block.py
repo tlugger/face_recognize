@@ -55,9 +55,16 @@ class FindFace(Block):
                 face_locations = face_recognition.face_locations(small_frame)
                 face_encodings = face_recognition.face_encodings(small_frame, face_locations)
 
-                signal = Signal({
-                    "found": "None"
-                })
+                if self.location():
+                    signal = Signal({
+                        "found": "None",
+                        "location": [0,0,0,0]
+                    })
+                else:
+                    signal = Signal({
+                        "found": "None"
+                    })
+
 
                 #for face_encoding in face_encodings:
                 for e in range(len(face_encodings)):
