@@ -37,7 +37,7 @@ class FindFace(Block):
                     name = face['name']
                     for encoding in face['encoding']:
                         self.ref_names.append(name)
-                        self.ref_encodings.append(pickle.loads(encoding))
+                        self.ref_encodings.append(pickle.loads(encoding.encode('utf-8')))
 
             if input_id == 'unknown':
                 if self.image():
