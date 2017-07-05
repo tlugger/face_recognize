@@ -6,6 +6,7 @@ from nio.signal.base import Signal
 import face_recognition
 import cv2
 import pickle
+import base64
 
 @input('known')
 @input('unknown')
@@ -37,18 +38,15 @@ class FindFace(Block):
                     name = face['name']
                     for encoding in face['encoding']:
                         self.ref_names.append(name)
-                        try:
-                            self.ref_encodings.append(pickle.loads(encoding))
-                        except TypeError:
-                            self.ref_encodings.append(pickle.loads(encoding.encode('utf-8')))
-
+                        self.ref_encodings.append(pickle.loads(base64.b64decode(encoding)))
+                        
             if input_id == 'unknown':
                 if self.image():
                     for cap in signal.capture:
                         try:
                             frame = pickle.loads(cap)
                         except TypeError:
-                            frame = pickle.loads(cap.encode('utf-8'))
+                            frame = pickle.loads(base64.b64decode(cap))
                 else:
                     # Grab a single frome form the webacm
                     try:

@@ -4,6 +4,7 @@ from nio.signal.base import Signal
 
 import cv2
 import pickle
+import base64
 
 class CaptureFrame(Block):
 
@@ -24,7 +25,7 @@ class CaptureFrame(Block):
             try:
                 ret, frame = self.video_capture.read()
                 sig = Signal({
-                    "capture": [pickle.dumps(frame)]
+                    "capture": base64.b64encode(pickle.dumps(frame)).decode()
                 })
                 self.notify_signals([sig])
             except:

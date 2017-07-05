@@ -5,6 +5,7 @@ from nio.types.string import StringType
 
 import face_recognition
 import pickle
+import base64
 
 class GetEncodingFromFile(Block):
 
@@ -22,7 +23,7 @@ class GetEncodingFromFile(Block):
         for f in file_path:
             image = face_recognition.load_image_file(f)
             face_encoding = face_recognition.face_encodings(image)[0]
-            serialized_encoding.append(pickle.dumps(face_encoding))
+            serialized_encoding.append(base64.b64encode(pickle.dumps(face_encoding)).decode())
 
         entry = {
             'user_id': user_id,
