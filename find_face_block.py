@@ -6,12 +6,14 @@ from nio.signal.base import Signal
 import face_recognition
 import cv2
 import pickle
+import base64
 
 @input('known')
 @input('unknown')
 class FindFace(Block):
 
     version = VersionProperty('2.0.0')
+    image = BoolProperty(title='Input Image?', default=False)
     location = BoolProperty(title='Output Face Location?', default=False)
     camera = IntProperty(title='Camera Index', default=0)
 
@@ -23,7 +25,8 @@ class FindFace(Block):
         self.ref_encodings = []
 
     def start(self):
-        self.video_capture = cv2.VideoCapture(self.camera())
+        if not self.image():
+            self.video_capture = cv2.VideoCapture(self.camera())
 
     def process_signals(self, signals, input_id):
 
@@ -35,18 +38,25 @@ class FindFace(Block):
                     name = face['name']
                     for encoding in face['encoding']:
                         self.ref_names.append(name)
-                        self.ref_encodings.append(pickle.loads(encoding))
+                        self.ref_encodings.append(pickle.loads(base64.b64decode(encoding)))
 
             if input_id == 'unknown':
-                # Grab a single frome form the webacm
-                try:
-                    ret, frame = self.video_capture.read()
-                except:
-                    break
+                if self.image():
+                    # for cap in signal.capture:
+                    try:
+                        frame = pickle.loads(signal.capture)
+                    except TypeError:
+                        frame = pickle.loads(base64.b64decode(signal.capture))
+                else:
+                    # Grab a single frome form the webacm
+                    try:
+                        ret, frame = self.video_capture.read()
+                    except:
+                        break
 
-                # If the camera didn't give us anything
-                if (not ret):
-                    break
+                    # If the camera didn't give us anything
+                    if (not ret):
+                        break
 
                 # Resize frame of video to 1/3ish size for faster face recognition processing
                 small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
