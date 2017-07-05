@@ -42,8 +42,7 @@ class FindFace(Block):
             if input_id == 'unknown':
                 if self.image():
                     for cap in signal.capture:
-                        print(cap)
-                        frame = pickle.loads(cap)
+                        frame = pickle.loads(cap.encode('utf-8'))
                 else:
                     # Grab a single frome form the webacm
                     try:
