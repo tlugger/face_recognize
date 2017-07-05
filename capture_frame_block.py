@@ -24,7 +24,7 @@ class CaptureFrame(Block):
             try:
                 ret, frame = self.video_capture.read()
                 sig = Signal({
-                    "capture": pickle.dumps(frame)
+                    "capture": [pickle.dumps(frame)]
                 })
                 self.notify_signals([sig])
             except:

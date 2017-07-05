@@ -41,7 +41,9 @@ class FindFace(Block):
 
             if input_id == 'unknown':
                 if self.image():
-                    frame = pickle.loads(signal.capture)
+                    for cap in signal.capture:
+                        print(cap)
+                        frame = pickle.loads(cap)
                 else:
                     # Grab a single frome form the webacm
                     try:
