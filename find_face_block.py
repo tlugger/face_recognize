@@ -39,14 +39,14 @@ class FindFace(Block):
                     for encoding in face['encoding']:
                         self.ref_names.append(name)
                         self.ref_encodings.append(pickle.loads(base64.b64decode(encoding)))
-                        
+
             if input_id == 'unknown':
                 if self.image():
-                    for cap in signal.capture:
-                        try:
-                            frame = pickle.loads(cap)
-                        except TypeError:
-                            frame = pickle.loads(base64.b64decode(cap))
+                    # for cap in signal.capture:
+                    try:
+                        frame = pickle.loads(signal.capture)
+                    except TypeError:
+                        frame = pickle.loads(base64.b64decode(signal.capture))
                 else:
                     # Grab a single frome form the webacm
                     try:
