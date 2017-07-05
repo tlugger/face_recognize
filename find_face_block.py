@@ -12,6 +12,7 @@ import pickle
 class FindFace(Block):
 
     version = VersionProperty('2.0.0')
+    image = BoolProperty(title='Input Image?', default=False)
     location = BoolProperty(title='Output Face Location?', default=False)
     camera = IntProperty(title='Camera Index', default=0)
 
@@ -23,7 +24,8 @@ class FindFace(Block):
         self.ref_encodings = []
 
     def start(self):
-        self.video_capture = cv2.VideoCapture(self.camera())
+        if not self.image():
+            self.video_capture = cv2.VideoCapture(self.camera())
 
     def process_signals(self, signals, input_id):
 
@@ -38,15 +40,18 @@ class FindFace(Block):
                         self.ref_encodings.append(pickle.loads(encoding))
 
             if input_id == 'unknown':
-                # Grab a single frome form the webacm
-                try:
-                    ret, frame = self.video_capture.read()
-                except:
-                    break
+                if self.image():
+                    frame = pickle.loads(signal.capture)
+                else:
+                    # Grab a single frome form the webacm
+                    try:
+                        ret, frame = self.video_capture.read()
+                    except:
+                        break
 
-                # If the camera didn't give us anything
-                if (not ret):
-                    break
+                    # If the camera didn't give us anything
+                    if (not ret):
+                        break
 
                 # Resize frame of video to 1/3ish size for faster face recognition processing
                 small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
