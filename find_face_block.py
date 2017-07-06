@@ -1,12 +1,14 @@
 from nio.block.base import Block
 from nio.block.terminals import input
-from nio.properties import VersionProperty, BoolProperty, IntProperty
+from nio.properties import VersionProperty, BoolProperty, IntProperty, StringProperty
 from nio.signal.base import Signal
 
 import face_recognition
 import cv2
 import pickle
 import base64
+import urllib.request
+import numpy
 
 @input('known')
 @input('unknown')
@@ -14,6 +16,8 @@ class FindFace(Block):
 
     version = VersionProperty('2.0.0')
     image = BoolProperty(title='Input Image?', default=False)
+    ipcam = BoolProperty(title='Use IP Camera?', default=False)
+    ipcam_address = StringProperty(title='IP Camera Address', default='')
     location = BoolProperty(title='Output Face Location?', default=False)
     camera = IntProperty(title='Camera Index', default=0)
 
@@ -25,7 +29,7 @@ class FindFace(Block):
         self.ref_encodings = []
 
     def start(self):
-        if not self.image():
+        if (not self.image() and not self.ipcam()):
             self.video_capture = cv2.VideoCapture(self.camera())
 
     def process_signals(self, signals, input_id):
@@ -47,6 +51,21 @@ class FindFace(Block):
                         frame = pickle.loads(signal.capture)
                     except TypeError:
                         frame = pickle.loads(base64.b64decode(signal.capture))
+                        
+                elif self.ipcam():
+                    done = False
+                    stream = urllib.request.urlopen(self.ipcam_address())
+                    ipbytes = bytes()
+                    while not done:
+                        ipbytes+=stream.read(1024)
+                        a = ipbytes.find(b'\xff\xd8')
+                        b = ipbytes.find(b'\xff\xd9')
+                        if a!=-1 and b!=-1:
+                            done = True
+                            jpg = ipbytes[a:b+2]
+                            ipbytes= ipbytes[b+2:]
+                            frame = cv2.imdecode(numpy.fromstring(jpg, dtype=numpy.uint8), cv2.IMREAD_UNCHANGED)
+
                 else:
                     # Grab a single frome form the webacm
                     try:

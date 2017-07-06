@@ -1,6 +1,6 @@
 # Face Recognize
 
-Blocks for working with facial recognition
+Blocks for working with facial recognition and images
 
 Get Encoding From File
 ========
@@ -16,6 +16,7 @@ Dependencies
 ----------------
 - face_recognition
 - pickle
+- base64
 
 Input
 -------
@@ -29,21 +30,44 @@ sample output:
 
 ```
 {
- 'encoding': <binary, 1182 bytes, '80 03 63 6e 75 6d...'>,
+ 'encoding': 'gANjbnVtcHkuY29yZS5tdWx0aWFycmF5Cl9yZWNvbn...',
  'name': 'Barack',
  'user_id': 'bobama'
 }
 ```
 
+Capture Frame
+=============
+Grab a frame of video from a specified camera and send the frame data as a signal.
+
+Dependencies
+----------------
+- opencv-python
+- pickle
+- base64
+- urllib.request
+- numpy
+
+Input
+------
+- Any signal to trigger a frame being grabbed from the specified camera
+
+Output
+-------
+- A signal containing the serialized and stringified video frame
+
 Find Face
-========
-Grab a frame of video from a webcam, find a face encoding within the frame, compare the encoding with encoding of known faces from an input signal, output a signal containing the name of the found face.
+=========
+Grab a frame of video from a specified camera, find a face encoding within the frame, compare the encoding with encoding of known faces from an input signal, output a signal containing the name of the found face.
 
 Dependencies
 ----------------
 - face_recognition
 - opencv-python
 - pickle
+- base64
+- urllib.request
+- numpy
 
 Input
 -------
@@ -58,7 +82,7 @@ sample known input:
    'name': 'Barack',
    'user_id': 'bobama',
    'id': '4999011a-8ded-49c4-a927-77a09dcdb578',
-   'encoding': <binary, 1182 bytes, '80 03 63 6e 75 6d...'>
+   'encoding': 'gANjbnVtcHkuY29yZS5tdWx0aWFycmF5Cl9yZWNvbn...'
   }
  ]
 }
@@ -72,6 +96,6 @@ sample output:
 
 ```
 {
- 'face': 'Barack'
+ 'found': 'Barack'
 }
 ```
