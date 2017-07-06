@@ -1,3 +1,6 @@
+numpy
+base64
+urllib
 pickle
 opencv-python
 face_recognition
