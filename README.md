@@ -45,6 +45,8 @@ Dependencies
 - opencv-python
 - pickle
 - base64
+- urllib.request
+- numpy
 
 Input
 ------
