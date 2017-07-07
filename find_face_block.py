@@ -51,7 +51,7 @@ class FindFace(Block):
                         frame = pickle.loads(signal.capture)
                     except TypeError:
                         frame = pickle.loads(base64.b64decode(signal.capture))
-                        
+
                 elif self.ipcam():
                     done = False
                     stream = urllib.request.urlopen(self.ipcam_address())
@@ -95,7 +95,8 @@ class FindFace(Block):
                     })
 
 
-                #for face_encoding in face_encodings:
+                names = []
+                locations = []
                 for e in range(len(face_encodings)):
                     # See if the face is a match for the known face(s)
                     match = face_recognition.compare_faces(self.ref_encodings, face_encodings[e], 0.5)
@@ -105,14 +106,17 @@ class FindFace(Block):
                         if match[i]:
                             name = self.ref_names[i]
 
-                    if self.location():
-                        signal = Signal({
-                            "found": name,
-                            "location": face_locations[e]
-                        })
-                    else:
-                        signal = Signal({
-                            "found": name
-                        })
+                    names.append(name)
+                    locations.append(face_locations[e])
+
+                if self.location():
+                    signal = Signal({
+                        "found": names,
+                        "location": locations
+                    })
+                else:
+                    signal = Signal({
+                        "found": names
+                    })
 
                 self.notify_signals([signal])
