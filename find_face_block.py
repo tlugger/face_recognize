@@ -88,7 +88,7 @@ class FindFace(Block):
                     })
                 else:
                     signal = Signal({
-                        "found": "None"
+                        "found": ["None"]
                     })
 
 
