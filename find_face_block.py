@@ -83,8 +83,8 @@ class FindFace(Block):
 
                 if self.location():
                     signal = Signal({
-                        "found": "None",
-                        "location": [0,0,0,0]
+                        "found": ["None"],
+                        "location": [[0,0,0,0]]
                     })
                 else:
                     signal = Signal({
