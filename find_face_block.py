@@ -77,12 +77,9 @@ class FindFace(Block):
                     if (not ret):
                         break
 
-                # Resize frame of video to 1/3ish size for faster face recognition processing
-                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-
                 # Find all the faces and face encodings in the current frame of video
-                face_locations = face_recognition.face_locations(small_frame)
-                face_encodings = face_recognition.face_encodings(small_frame, face_locations)
+                face_locations = face_recognition.face_locations(frame)
+                face_encodings = face_recognition.face_encodings(frame, face_locations)
 
                 if self.location():
                     signal = Signal({
