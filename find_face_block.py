@@ -21,7 +21,6 @@ class FindFace(Block):
     location = BoolProperty(title='Output Face Location?', default=False)
     camera = IntProperty(title='Camera Index', default=0)
 
-
     def __init__(self):
         super().__init__()
         self.video_capture = None
@@ -46,7 +45,6 @@ class FindFace(Block):
 
             if input_id == 'unknown':
                 if self.image():
-                    # for cap in signal.capture:
                     try:
                         frame = pickle.loads(signal.capture)
                     except TypeError:
@@ -73,7 +71,7 @@ class FindFace(Block):
                     except:
                         break
 
-                    # If the camera didn't give us anything
+                    # If the camera didn't give us anything, don't do anything
                     if (not ret):
                         break
 
@@ -94,26 +92,28 @@ class FindFace(Block):
 
                 names = []
                 locations = []
-                for e in range(len(face_encodings)):
-                    # See if the face is a match for the known face(s)
-                    match = face_recognition.compare_faces(self.ref_encodings, face_encodings[e], 0.5)
-                    name = "Unknown"
+                if len(face_encodings) > 0:
+                    for e in range(len(face_encodings)):
+                        # See if the face is a match for the known face(s)
+                        match = face_recognition.compare_faces(self.ref_encodings, face_encodings[e], 0.5)
+                        name = "Unknown"
 
-                    for i in range(len(match)):
-                        if match[i]:
-                            name = self.ref_names[i]
+                        for i in range(len(match)):
+                            if match[i]:
+                                name = self.ref_names[i]
 
-                    names.append(name)
-                    locations.append(face_locations[e])
+                        names.append(name)
+                        location = [face_locations[e][0], face_locations[e][1], face_locations[e][2], face_locations[e][3]]
+                        locations.append(location)
 
-                if self.location():
-                    signal = Signal({
-                        "found": names,
-                        "location": locations
-                    })
-                else:
-                    signal = Signal({
-                        "found": names
-                    })
+                    if self.location():
+                        signal = Signal({
+                            "found": names,
+                            "location": locations
+                        })
+                    else:
+                        signal = Signal({
+                            "found": names
+                        })
 
                 self.notify_signals([signal])
