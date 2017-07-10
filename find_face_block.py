@@ -1,6 +1,6 @@
 from nio.block.base import Block
 from nio.block.terminals import input
-from nio.properties import VersionProperty, BoolProperty, IntProperty, StringProperty
+from nio.properties import VersionProperty, BoolProperty, IntProperty, StringProperty, FloatProperty
 from nio.signal.base import Signal
 
 import face_recognition
@@ -15,11 +15,12 @@ import numpy
 class FindFace(Block):
 
     version = VersionProperty('2.0.0')
-    image = BoolProperty(title='Input Image?', default=False)
-    ipcam = BoolProperty(title='Use IP Camera?', default=False)
-    ipcam_address = StringProperty(title='IP Camera Address', default='')
-    location = BoolProperty(title='Output Face Location?', default=False)
     camera = IntProperty(title='Camera Index', default=0)
+    frame_size = FloatProperty(title='Frame Size', default=1)
+    image = BoolProperty(title='Input Image', default=False)
+    ipcam = BoolProperty(title='IP Camera', default=False)
+    ipcam_address = StringProperty(title='IP Camera Address', default='')
+    location = BoolProperty(title='Output Face Location', default=False)
 
     def __init__(self):
         super().__init__()
@@ -74,6 +75,9 @@ class FindFace(Block):
                     # If the camera didn't give us anything, don't do anything
                     if (not ret):
                         break
+
+                # Resize frame to specified size
+                frame = cv2.resize(frame, (0,0), fx=self.frame_size(), fy=self.frame_size())
 
                 # Find all the faces and face encodings in the current frame of video
                 face_locations = face_recognition.face_locations(frame)
