@@ -15,8 +15,9 @@ import numpy
 class FindFace(Block):
 
     version = VersionProperty('2.0.0')
+    accuracy = FloatProperty(title='Comparison Accuracy', default=0.6)
     camera = IntProperty(title='Camera Index', default=0)
-    frame_size = FloatProperty(title='Frame Size', default=1)
+    frame_size = FloatProperty(title='Frame Size', default=1.0)
     image = BoolProperty(title='Input Image', default=False)
     ipcam = BoolProperty(title='IP Camera', default=False)
     ipcam_address = StringProperty(title='IP Camera Address', default='')
@@ -99,7 +100,7 @@ class FindFace(Block):
                 if len(face_encodings) > 0:
                     for e in range(len(face_encodings)):
                         # See if the face is a match for the known face(s)
-                        match = face_recognition.compare_faces(self.ref_encodings, face_encodings[e], 0.5)
+                        match = face_recognition.compare_faces(self.ref_encodings, face_encodings[e], self.accuracy())
                         name = "Unknown"
 
                         for i in range(len(match)):
