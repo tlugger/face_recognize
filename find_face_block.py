@@ -73,7 +73,6 @@ class FindFace(Block):
                     except:
                         break
 
-                    # If the camera didn't give us anything, don't do anything
                     if (not ret):
                         break
 
@@ -84,19 +83,8 @@ class FindFace(Block):
                 face_locations = face_recognition.face_locations(frame)
                 face_encodings = face_recognition.face_encodings(frame, face_locations)
 
-                if self.location():
-                    signal = Signal({
-                        "found": ["None"],
-                        "location": [[0,0,0,0]]
-                    })
-                else:
-                    signal = Signal({
-                        "found": ["None"]
-                    })
+                sigs = []
 
-
-                names = []
-                locations = []
                 if len(face_encodings) > 0:
                     for e in range(len(face_encodings)):
                         # See if the face is a match for the known face(s)
@@ -107,18 +95,27 @@ class FindFace(Block):
                             if match[i]:
                                 name = self.ref_names[i]
 
-                        names.append(name)
-                        location = [face_locations[e][0], face_locations[e][1], face_locations[e][2], face_locations[e][3]]
-                        locations.append(location)
+                        if self.location():
+                            signal = Signal({
+                                "found": name,
+                                "location": face_locations[e]
+                            })
+                        else:
+                            signal = Signal({
+                                "found": name
+                            })
 
+                        sigs.append(signal)
+                else:
                     if self.location():
                         signal = Signal({
-                            "found": names,
-                            "location": locations
+                            "found": "None",
+                            "location": [0,0,0,0]
                         })
                     else:
                         signal = Signal({
-                            "found": names
+                            "found": "None"
                         })
+                    sigs.append(signal)
 
-                self.notify_signals([signal])
+                self.notify_signals(sigs)
