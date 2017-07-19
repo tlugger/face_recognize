@@ -31,6 +31,7 @@ class FindFace(Block):
 
     def start(self):
         if (not self.image() and not self.ipcam()):
+            # Establish connection with usb camera if it's used
             self.video_capture = cv2.VideoCapture(self.camera())
 
     def process_signals(self, signals, input_id):
@@ -47,12 +48,14 @@ class FindFace(Block):
 
             if input_id == 'unknown':
                 if self.image():
+                    # Load in an image frame
                     try:
                         frame = pickle.loads(signal.capture)
                     except TypeError:
                         frame = pickle.loads(base64.b64decode(signal.capture))
 
                 elif self.ipcam():
+                    # Download a jpeg frame from the camera
                     done = False
                     stream = urllib.request.urlopen(self.ipcam_address())
                     ipbytes = bytes()
@@ -67,13 +70,12 @@ class FindFace(Block):
                             frame = cv2.imdecode(numpy.fromstring(jpg, dtype=numpy.uint8), cv2.IMREAD_UNCHANGED)
 
                 else:
-                    # Grab a single frome form the webacm
+                    # Grab a single frame from the webcam
                     try:
                         ret, frame = self.video_capture.read()
                     except:
                         break
 
-                    # If the camera didn't give us anything, don't do anything
                     if (not ret):
                         break
 
@@ -84,6 +86,7 @@ class FindFace(Block):
                 face_locations = face_recognition.face_locations(frame)
                 face_encodings = face_recognition.face_encodings(frame, face_locations)
 
+                # Set a default signal if no faces are found
                 if self.location():
                     signal = Signal({
                         "found": ["None"],
@@ -99,18 +102,21 @@ class FindFace(Block):
                 locations = []
                 if len(face_encodings) > 0:
                     for e in range(len(face_encodings)):
-                        # See if the face is a match for the known face(s)
+                        # Compare unknown face with all known face encodings
                         match = face_recognition.compare_faces(self.ref_encodings, face_encodings[e], self.accuracy())
                         name = "Unknown"
 
+                        # Grab the name of the matched face
                         for i in range(len(match)):
                             if match[i]:
                                 name = self.ref_names[i]
 
                         names.append(name)
+                        # Get the location and format it nicely
                         location = [face_locations[e][0], face_locations[e][1], face_locations[e][2], face_locations[e][3]]
                         locations.append(location)
 
+                    # Add list of found names (and locations) to the output signal
                     if self.location():
                         signal = Signal({
                             "found": names,
