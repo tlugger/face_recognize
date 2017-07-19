@@ -57,7 +57,10 @@ class FindFace(Block):
                 elif self.ipcam():
                     # Download a jpeg frame from the camera
                     done = False
-                    stream = urllib.request.urlopen(self.ipcam_address())
+                    try:
+                        stream = urllib.request.urlopen(self.ipcam_address())
+                    except:
+                        break
                     ipbytes = bytes()
                     while not done:
                         ipbytes+=stream.read(1024)
